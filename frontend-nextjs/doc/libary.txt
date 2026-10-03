@@ -1,0 +1,5 @@
+npm install tailwindcss 
+npm install @tailwindcss/postcss 
+npm install daisyui@latest
+
+npx skills add saadeghi/daisyui --agent opencode --yes

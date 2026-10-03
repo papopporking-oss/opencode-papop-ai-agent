@@ -1,0 +1,43 @@
+# Libary
+```
+"dependencies": {
+    "next": "16.3.4",
+    "react": "19.2.8",
+    "react-dom": "19.2.8"
+},
+"devDependencies": {
+    "@tailwindcss/postcss": "^4",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "eslint": "^9",
+    "eslint-config-next": "16.3.4",
+    "tailwindcss": "^4",
+    "typescript": "^5"
+}
+```
+
+# Info
+
+
+# Task
+มีการตกแต่งด้วย tailwindcss
+ผมอยากได้โปรแกรม admin report สำหรับ สรุปผลการแข่งรถ ผมให้คุณคิดข้อมูลมาเองเลย และต้องสามารถเพิ่มลบแก้ไขข้อมูลได้ ข้อมูลจะถูกเก็บใน local storage
+
+- Route: /test/ai/report
+- Styling: Tailwind CSS
+
+# Rules
+- All text displayed on the web page must be in English only.
+- Do not ask questions. If something is unclear, make a reasonable assumption and list all assumptions at the end of your response.
+- If the target file already exists, overwrite it completely with the new implementation.
+- Do not read anything inside ./node_modules/.
+- Do not run tests, builds, or dev servers. Your only job is to write the code.
+- All helper and sub functions must be written as arrow functions.
+- Write code comments in English. Keep them short and simple. Do not use special characters or emoji in comments.
+
+# Output file
+- Save to: ./app/test/ai/
+
+# Response language
+- Respond to the user in English.

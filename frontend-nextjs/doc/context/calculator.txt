@@ -1,0 +1,11 @@
+# Info
+ช่วยเขียนโปรแกรม เครื่องคิดเลขให้หน่อย
+ใช้งานผ่าน route /test/ai/calculator
+
+# Role
+- เขียนไม่ต้องมี css
+- เขียน html กับ typescript เท่านั้น
+- เขียนเป็นภาษา EN เท่านั้น
+
+# Save file
+- ./app
