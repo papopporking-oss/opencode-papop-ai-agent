@@ -1,0 +1,1 @@
+opencode-papop-ai-agent
