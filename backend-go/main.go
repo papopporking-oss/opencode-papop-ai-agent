@@ -16,5 +16,8 @@ func main() {
     })
     router.GET("/testget", testget.TestGet)
     router.GET("/testpost", testpost.TestPost)
-    router.Run() // listens on 0.0.0.0:8080 by default
+    // listens on 0.0.0.0:8080 by default
+    // router.Run()
+    	// HTTPS
+	router.RunTLS(":8443","./ssl/fullchain.pem","./ssl/privkey.pem",)
 }
