@@ -1,0 +1,1707 @@
+# Skill: go-gin-api-standard
+
+## 1. Purpose
+
+This skill defines the mandatory coding standards for implementing Go API endpoints in a Gin + GORM project.
+
+The AI Agent MUST follow this skill when creating, modifying, or refactoring API endpoint code.
+
+The primary goals are:
+
+1. Keep every API endpoint structurally consistent.
+2. Keep HTTP handling separate from database query logic.
+3. Use Raw SQL consistently.
+4. Make database queries reusable and testable through sub functions.
+5. Keep Request, Response, validation, database connection, business logic, and response handling in a predictable order.
+6. Prevent the AI Agent from introducing alternative patterns that differ from the project standard.
+
+Unless the user explicitly requests otherwise, the AI Agent MUST NOT deviate from the rules in this skill.
+
+---
+
+# 2. Technology and Project Convention
+
+The API uses:
+
+* Go
+* Gin
+* GORM
+* PostgreSQL
+* Raw SQL
+
+Typical imports include:
+
+```go
+import (
+    "context"
+    "net/http"
+
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+)
+```
+
+The database connection MUST be obtained through the project's database connection model.
+
+Example:
+
+```go
+db := pgopencode.Connect()
+```
+
+The exact database package depends on the endpoint's assigned database model.
+
+For example:
+
+```go
+internal/database/pgopencode
+```
+
+may expose:
+
+```go
+pgopencode.Connect()
+```
+
+and:
+
+```go
+pgopencode.DB
+```
+
+The AI Agent MUST use the database connection model specified by the project or user.
+
+---
+
+# 3. Mandatory API Endpoint Structure
+
+Every API endpoint MUST have the following high-level structure:
+
+```text
+Request
+    ↓
+Validate query/body parameters
+    ↓
+Validate request/business validation
+    ↓
+Connect to database
+    ↓
+Main logic
+    ↓
+Return response
+```
+
+The main handler MUST follow these five steps:
+
+```text
+Step 1: Validate query parameter request
+Step 2: Validate request
+Step 3: Connect to database
+Step 4: Main logic
+Step 5: Return response
+```
+
+The handler MUST be named:
+
+```go
+func Handler(c *gin.Context) {}
+```
+
+`Handler` is the main handler function of the API endpoint.
+
+---
+
+# 4. Main Handler Function
+
+Every endpoint MUST define:
+
+```go
+func Handler(c *gin.Context) {
+}
+```
+
+The Handler is responsible for:
+
+1. Reading HTTP request parameters.
+2. Validating the request binding.
+3. Running request/business validation.
+4. Connecting to the database.
+5. Calling database/query sub functions.
+6. Handling errors.
+7. Returning the final HTTP response.
+
+The Handler SHOULD NOT contain raw SQL.
+
+The Handler SHOULD NOT contain large database query implementations.
+
+Database queries MUST be extracted into sub functions.
+
+---
+
+# 5. Required Code Order
+
+The code inside an endpoint file SHOULD be organized in this order:
+
+```text
+1. package declaration
+
+2. imports
+
+3. Request struct
+
+4. Response struct
+
+5. validate function
+
+6. database query/result structs
+
+7. database query sub functions
+
+8. main Handler function
+```
+
+Example:
+
+```go
+package templatedbqueryget
+
+import (
+    "context"
+    "net/http"
+    "time"
+
+    "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
+)
+
+// Request
+type Request struct {
+    Username string `form:"username" binding:"required"`
+}
+
+// Response
+type Response struct {
+    Status  string      `json:"status"`
+    Message string      `json:"message"`
+    Data    interface{} `json:"data"`
+    Version interface{} `json:"version"`
+}
+
+// Validate
+func validate() error {
+    return nil
+}
+
+// Database result struct
+type AuthUser struct {
+    ID              int64      `json:"id" gorm:"column:id"`
+    CreatedAt       time.Time  `json:"created_at" gorm:"column:created_at"`
+    UpdatedAt       time.Time  `json:"updated_at" gorm:"column:updated_at"`
+    Email            string     `json:"email" gorm:"column:email"`
+    Username        *string    `json:"username" gorm:"column:username"`
+    Status          string     `json:"status" gorm:"column:status"`
+    EmailVerifiedAt *time.Time `json:"email_verified_at" gorm:"column:email_verified_at"`
+}
+
+// Database query sub function
+func getAuthUserByUsername(...) (...) {
+    ...
+}
+
+// Main handler function
+func Handler(c *gin.Context) {
+    ...
+}
+```
+
+---
+
+# 6. Request Struct
+
+Every API endpoint MUST define a `Request` struct.
+
+The struct MUST be named:
+
+```go
+type Request struct {
+}
+```
+
+The fields MUST use the appropriate Gin binding tags.
+
+For query parameters:
+
+```go
+type Request struct {
+    Username string `form:"username" binding:"required"`
+}
+```
+
+For JSON body requests, use the project's normal JSON binding convention.
+
+Example:
+
+```go
+type Request struct {
+    Username string `json:"username" binding:"required"`
+}
+```
+
+The AI Agent MUST NOT mix query parameter tags and JSON tags unless the endpoint actually requires both.
+
+---
+
+# 7. Response Struct
+
+Every API endpoint MUST define a `Response` struct.
+
+Minimum required fields:
+
+```go
+type Response struct {
+    Status  string      `json:"status"`
+    Message string      `json:"message"`
+    Data    interface{} `json:"data"`
+}
+```
+
+Additional response fields MUST be added according to the API requirement.
+
+For example:
+
+```go
+type Response struct {
+    Status  string      `json:"status"`
+    Message string      `json:"message"`
+    Data    interface{} `json:"data"`
+    Version interface{} `json:"version"`
+}
+```
+
+The API response format MUST follow:
+
+```json
+{
+  "status": "ok",
+  "message": "",
+  "key": "value"
+}
+```
+
+or:
+
+```json
+{
+  "status": "error",
+  "message": "",
+  "key": "value"
+}
+```
+
+The `status` field MUST contain either:
+
+```text
+ok
+```
+
+or:
+
+```text
+error
+```
+
+The `message` field MUST always be present.
+
+Additional keys MUST be defined by the API requirement.
+
+The AI Agent MUST NOT arbitrarily introduce a completely different response format.
+
+---
+
+# 8. Standard Handler Flow
+
+Every Handler MUST follow this sequence.
+
+## Step 1: Validate query parameter request
+
+For query parameters:
+
+```go
+var req Request
+
+if err := c.ShouldBindQuery(&req); err != nil {
+    c.JSON(http.StatusBadRequest, Response{
+        Status:  "error",
+        Message: "Invalid request data",
+        Data:    nil,
+    })
+    return
+}
+```
+
+For body requests, use the appropriate Gin binding method.
+
+Example:
+
+```go
+if err := c.ShouldBindJSON(&req); err != nil {
+    ...
+}
+```
+
+The binding operation MUST happen before custom validation.
+
+---
+
+# 9. Step 2: Validate Request
+
+After request binding, call the validation function.
+
+Example:
+
+```go
+if err := validate(); err != nil {
+    c.JSON(http.StatusBadRequest, Response{
+        Status:  "error",
+        Message: err.Error(),
+        Data:    nil,
+    })
+    return
+}
+```
+
+The validation function SHOULD be defined separately:
+
+```go
+func validate() error {
+    /*
+        github.com/go-playground/validator/v10
+
+        Add custom validation here if needed.
+    */
+    return nil
+}
+```
+
+If validation requires request data, the function SHOULD receive the request:
+
+```go
+func validate(req Request) error {
+    return nil
+}
+```
+
+The AI Agent SHOULD NOT put complex validation logic directly inside `Handler`.
+
+---
+
+# 10. Step 3: Connect to Database
+
+The database connection MUST be obtained through the project's database connection model.
+
+Example:
+
+```go
+db := pgopencode.Connect()
+```
+
+The AI Agent MUST NOT create a new database connection directly inside the Handler when an existing project database model is available.
+
+Do NOT create connections such as:
+
+```go
+gorm.Open(...)
+```
+
+inside the API Handler unless the user explicitly requests it.
+
+The database connection model is responsible for managing the database connection.
+
+---
+
+# 11. Database Query Access
+
+Database queries MUST use the database connection returned by the database connection model.
+
+Example:
+
+```go
+db := pgopencode.Connect()
+```
+
+Then pass `db` to query sub functions:
+
+```go
+user, err := getAuthUserByUsername(
+    c.Request.Context(),
+    db,
+    req.Username,
+)
+```
+
+The Handler MUST NOT contain Raw SQL.
+
+Incorrect:
+
+```go
+func Handler(c *gin.Context) {
+    db := pgopencode.Connect()
+
+    var user AuthUser
+
+    query := `
+        SELECT ...
+        FROM auth_user
+        WHERE username = ?
+    `
+
+    db.Raw(query, req.Username).Scan(&user)
+
+    ...
+}
+```
+
+Correct:
+
+```go
+func Handler(c *gin.Context) {
+    db := pgopencode.Connect()
+
+    user, err := getAuthUserByUsername(
+        c.Request.Context(),
+        db,
+        req.Username,
+    )
+
+    if err != nil {
+        ...
+    }
+}
+```
+
+---
+
+# 12. Database Query MUST Be a Sub Function
+
+Every database query MUST be implemented as a separate sub function.
+
+A query sub function SHOULD have this structure:
+
+```go
+func getAuthUserByUsername(
+    ctx context.Context,
+    db *gorm.DB,
+    name string,
+) (*AuthUser, error) {
+    ...
+}
+```
+
+The function MUST receive:
+
+1. `context.Context`
+2. `*gorm.DB`
+3. Query parameters required by the SQL
+
+Example:
+
+```go
+func getAuthUserByUsername(
+    ctx context.Context,
+    db *gorm.DB,
+    name string,
+) (*AuthUser, error) {
+    ...
+}
+```
+
+The Handler then calls the function:
+
+```go
+user, err := getAuthUserByUsername(
+    c.Request.Context(),
+    db,
+    req.Username,
+)
+if err != nil {
+    c.JSON(http.StatusNotFound, Response{
+        Status:  "error",
+        Message: "Not found",
+        Data:    nil,
+    })
+    return
+}
+```
+
+---
+
+# 13. Query Result Struct
+
+Every database query result SHOULD have its own struct when appropriate.
+
+The database result struct MUST be declared BEFORE its corresponding query sub function.
+
+Example:
+
+```go
+type AuthUser struct {
+    ID              int64      `json:"id" gorm:"column:id"`
+    CreatedAt       time.Time  `json:"created_at" gorm:"column:created_at"`
+    UpdatedAt       time.Time  `json:"updated_at" gorm:"column:updated_at"`
+    Email            string     `json:"email" gorm:"column:email"`
+    Username        *string    `json:"username" gorm:"column:username"`
+    Status           string     `json:"status" gorm:"column:status"`
+    EmailVerifiedAt *time.Time `json:"email_verified_at" gorm:"column:email_verified_at"`
+}
+
+func getAuthUserByUsername(
+    ctx context.Context,
+    db *gorm.DB,
+    name string,
+) (*AuthUser, error) {
+    ...
+}
+```
+
+The struct MUST be placed above the query function that uses it.
+
+---
+
+# 14. Database Struct Tags
+
+Every field returned from the database MUST specify the real database column name using:
+
+```go
+gorm:"column:[column_name]"
+```
+
+Example:
+
+```go
+type AuthUser struct {
+    ID       int64  `json:"id" gorm:"column:id"`
+    Email    string `json:"email" gorm:"column:email"`
+    Username string `json:"username" gorm:"column:username"`
+}
+```
+
+The `gorm` column name MUST match the actual database column name.
+
+The AI Agent MUST NOT invent a different column name.
+
+The JSON field name MUST also correspond to the API field name and, under this project convention, normally match the database column name.
+
+Example:
+
+```go
+Email string `json:"email" gorm:"column:email"`
+```
+
+Incorrect:
+
+```go
+Email string `json:"mail" gorm:"column:email"`
+```
+
+unless the API specification explicitly requires `mail`.
+
+---
+
+# 15. Raw SQL Only
+
+All database queries MUST use Raw SQL.
+
+The AI Agent MUST NOT use GORM query-builder methods for database queries when implementing endpoints under this skill.
+
+Do NOT use:
+
+```go
+db.Where(...)
+db.Find(...)
+db.First(...)
+db.Select(...)
+db.Model(...)
+db.Table(...)
+db.Preload(...)
+db.Joins(...)
+```
+
+Instead, use:
+
+```go
+db.WithContext(ctx).Raw(query, parameter...).Scan(&result)
+```
+
+---
+
+# 16. Mandatory Raw SQL Execution Pattern
+
+The standard query execution pattern is:
+
+```go
+err := db.WithContext(ctx).
+    Raw(query, parameter...).
+    Scan(&result).
+    Error
+```
+
+Or:
+
+```go
+err := db.WithContext(ctx).Raw(query, parameter...).Scan(&result).Error
+```
+
+Example:
+
+```go
+func getAuthUserByUsername(
+    ctx context.Context,
+    db *gorm.DB,
+    name string,
+) (*AuthUser, error) {
+
+    var user AuthUser
+
+    query := `
+        SELECT
+            id,
+            created_at,
+            updated_at,
+            email,
+            username,
+            status,
+            email_verified_at
+        FROM auth_user
+        WHERE username = ?
+        LIMIT 1
+    `
+
+    err := db.WithContext(ctx).Raw(query, name).Scan(&user).Error
+    if err != nil {
+        return nil, err
+    }
+
+    if user.ID == 0 {
+        return nil, gorm.ErrRecordNotFound
+    }
+
+    return &user, nil
+}
+```
+
+The AI Agent MUST use parameterized SQL.
+
+Do NOT concatenate user input into SQL.
+
+Incorrect:
+
+```go
+query := `
+    SELECT *
+    FROM auth_user
+    WHERE username = '` + name + `'
+`
+```
+
+Correct:
+
+```go
+query := `
+    SELECT *
+    FROM auth_user
+    WHERE username = ?
+`
+
+db.WithContext(ctx).Raw(query, name).Scan(&user)
+```
+
+---
+
+# 17. SQL Formatting Rules
+
+SQL MUST be written as Raw SQL.
+
+SQL keywords MUST be uppercase.
+
+Examples:
+
+```sql
+SELECT
+FROM
+WHERE
+LIMIT
+ORDER BY
+GROUP BY
+INSERT INTO
+VALUES
+UPDATE
+SET
+DELETE FROM
+JOIN
+LEFT JOIN
+INNER JOIN
+ON
+AND
+OR
+```
+
+Correct:
+
+```sql
+SELECT
+    id,
+    email,
+    username
+FROM auth_user
+WHERE username = ?
+LIMIT 1
+```
+
+Incorrect:
+
+```sql
+select
+    id,
+    email,
+    username
+from auth_user
+where username = ?
+limit 1
+```
+
+---
+
+# 18. SQL Column Formatting
+
+Columns MUST be written explicitly.
+
+The AI Agent SHOULD NOT use:
+
+```sql
+SELECT *
+```
+
+when the required columns are known.
+
+Correct:
+
+```sql
+SELECT
+    id,
+    created_at,
+    updated_at,
+    email,
+    username,
+    status
+FROM auth_user
+WHERE username = ?
+```
+
+Each selected column SHOULD be written on its own line.
+
+The column names MUST correspond to the real database column names.
+
+Do NOT rename database columns in SQL unless explicitly required.
+
+Example:
+
+```sql
+SELECT
+    email,
+    username,
+    status
+FROM auth_user
+```
+
+not:
+
+```sql
+SELECT
+    email AS user_email,
+    username AS user_name,
+    status AS user_status
+FROM auth_user
+```
+
+unless the API specification explicitly requires aliases.
+
+---
+
+# 19. Query Function Error Handling
+
+Every query sub function MUST check the database error.
+
+Example:
+
+```go
+err := db.WithContext(ctx).Raw(query, name).Scan(&user).Error
+if err != nil {
+    return nil, err
+}
+```
+
+After querying, the function MUST check whether the expected record exists when necessary.
+
+Example:
+
+```go
+if user.ID == 0 {
+    return nil, gorm.ErrRecordNotFound
+}
+```
+
+Then return the result:
+
+```go
+return &user, nil
+```
+
+The query function MUST NOT write HTTP responses.
+
+Incorrect:
+
+```go
+func getAuthUserByUsername(...) {
+    c.JSON(...)
+}
+```
+
+The query function only returns data and errors.
+
+The Handler is responsible for HTTP responses.
+
+---
+
+# 20. Handler and Query Responsibility
+
+The responsibilities MUST be separated as follows.
+
+Handler:
+
+```text
+HTTP request
+↓
+Binding
+↓
+Validation
+↓
+Database connection
+↓
+Call query functions
+↓
+Handle query errors
+↓
+HTTP response
+```
+
+Query function:
+
+```text
+Receive context
+↓
+Receive database connection
+↓
+Build Raw SQL
+↓
+Execute Raw SQL
+↓
+Check database error
+↓
+Check record existence
+↓
+Return data/error
+```
+
+The query function MUST NOT know about Gin.
+
+The query function MUST NOT receive `*gin.Context`.
+
+Correct:
+
+```go
+func getAuthUserByUsername(
+    ctx context.Context,
+    db *gorm.DB,
+    name string,
+) (*AuthUser, error)
+```
+
+Incorrect:
+
+```go
+func getAuthUserByUsername(
+    c *gin.Context,
+    db *gorm.DB,
+    name string,
+) (*AuthUser, error)
+```
+
+---
+
+# 21. Context Propagation
+
+The HTTP request context MUST be passed to database query functions.
+
+Use:
+
+```go
+c.Request.Context()
+```
+
+Example:
+
+```go
+user, err := getAuthUserByUsername(
+    c.Request.Context(),
+    db,
+    req.Username,
+)
+```
+
+Then the query function MUST use:
+
+```go
+db.WithContext(ctx)
+```
+
+Example:
+
+```go
+err := db.WithContext(ctx).
+    Raw(query, name).
+    Scan(&user).
+    Error
+```
+
+This ensures that request cancellation and deadlines can propagate to the database operation.
+
+---
+
+# 22. Error Response
+
+When a query sub function returns an error, the Handler MUST return an appropriate error response.
+
+Example:
+
+```go
+user, err := getAuthUserByUsername(
+    c.Request.Context(),
+    db,
+    req.Username,
+)
+
+if err != nil {
+    c.JSON(http.StatusNotFound, Response{
+        Status:  "error",
+        Message: "Not found",
+        Data:    nil,
+    })
+    return
+}
+```
+
+The response MUST follow the project's standard response structure.
+
+The Handler MUST return immediately after writing an error response.
+
+Example:
+
+```go
+if err != nil {
+    c.JSON(...)
+    return
+}
+```
+
+---
+
+# 23. Main Logic
+
+Step 4 is the main business logic.
+
+Example:
+
+```go
+user, err := getAuthUserByUsername(
+    c.Request.Context(),
+    db,
+    req.Username,
+)
+if err != nil {
+    ...
+}
+
+version, err := getVersion(
+    c.Request.Context(),
+    db,
+)
+if err != nil {
+    ...
+}
+```
+
+If multiple database queries are required, each query MUST have its own sub function.
+
+Do NOT combine unrelated SQL queries into one large Handler block.
+
+---
+
+# 24. Multiple Query Functions
+
+If an endpoint requires multiple queries, define multiple query result structs and query functions.
+
+Example:
+
+```go
+type AuthUser struct {
+    ID       int64  `json:"id" gorm:"column:id"`
+    Username string `json:"username" gorm:"column:username"`
+}
+
+func getAuthUserByUsername(
+    ctx context.Context,
+    db *gorm.DB,
+    username string,
+) (*AuthUser, error) {
+    ...
+}
+
+type Version struct {
+    Version string `json:"version" gorm:"column:version"`
+}
+
+func getVersion(
+    ctx context.Context,
+    db *gorm.DB,
+) (*Version, error) {
+    ...
+}
+```
+
+Then call them from the Handler:
+
+```go
+user, err := getAuthUserByUsername(
+    c.Request.Context(),
+    db,
+    req.Username,
+)
+if err != nil {
+    ...
+}
+
+version, err := getVersion(
+    c.Request.Context(),
+    db,
+)
+if err != nil {
+    ...
+}
+```
+
+---
+
+# 25. Complete Standard Handler Template
+
+The AI Agent SHOULD use the following template as the default implementation pattern:
+
+```go
+// Main handler function
+func Handler(c *gin.Context) {
+    var req Request
+
+    // Step 1: Validate query parameter request
+    if err := c.ShouldBindQuery(&req); err != nil {
+        c.JSON(http.StatusBadRequest, Response{
+            Status:  "error",
+            Message: "Invalid request data",
+            Data:    nil,
+        })
+        return
+    }
+
+    // Step 2: Validate request
+    if err := validate(); err != nil {
+        c.JSON(http.StatusBadRequest, Response{
+            Status:  "error",
+            Message: err.Error(),
+            Data:    nil,
+        })
+        return
+    }
+
+    // Step 3: Connect to database
+    db := [model connect database].Connect()
+
+    // Step 4: Main logic
+    data, err := [query sub function](
+        c.Request.Context(),
+        db,
+        [parameter...],
+    )
+    if err != nil {
+        c.JSON(http.StatusNotFound, Response{
+            Status:  "error",
+            Message: "Not found",
+            Data:    nil,
+        })
+        return
+    }
+
+    // Step 5: Return response
+    c.JSON(http.StatusOK, Response{
+        Status:  "ok",
+        Message: "[success message]",
+        Data:    data,
+    })
+}
+```
+
+The AI Agent MUST adapt the response fields and HTTP status codes according to the API requirement, but MUST preserve the overall five-step structure.
+
+---
+
+# 26. Complete Standard Query Template
+
+The default query pattern is:
+
+```go
+type [QueryResult] struct {
+    [Field] [Type] `json:"[column_name]" gorm:"column:[column_name]"`
+}
+
+func [queryFunction](
+    ctx context.Context,
+    db *gorm.DB,
+    [parameter] [Type],
+) (*[QueryResult], error) {
+
+    var result [QueryResult]
+
+    query := `
+        SELECT
+            [column_name],
+            [column_name]
+        FROM [table_name]
+        WHERE [column_name] = ?
+        LIMIT 1
+    `
+
+    err := db.WithContext(ctx).Raw(
+        query,
+        [parameter],
+    ).Scan(&result).Error
+    if err != nil {
+        return nil, err
+    }
+
+    if [record does not exist] {
+        return nil, gorm.ErrRecordNotFound
+    }
+
+    return &result, nil
+}
+```
+
+---
+
+# 27. Database Connection Failure
+
+The database connection function may return `nil` depending on the project's implementation.
+
+The AI Agent MUST consider this possibility.
+
+If the project's database connection function returns `nil` on failure, the Handler SHOULD handle it before executing queries.
+
+Example:
+
+```go
+db := pgopencode.Connect()
+if db == nil {
+    c.JSON(http.StatusInternalServerError, Response{
+        Status:  "error",
+        Message: "Database connection failed",
+        Data:    nil,
+    })
+    return
+}
+```
+
+However, if the existing project convention already handles this differently, the AI Agent MUST follow the established project convention.
+
+---
+
+# 28. Do Not Invent Database Schema
+
+The AI Agent MUST NOT invent:
+
+* table names
+* column names
+* relationships
+* indexes
+* database fields
+* foreign keys
+* data types
+
+when implementing a database query.
+
+The Agent MUST use schema information provided by:
+
+1. The user's request.
+2. Existing project code.
+3. Existing database models.
+4. Existing SQL.
+5. Database migration/schema files.
+
+If the schema is unknown, the Agent SHOULD inspect the project before writing SQL.
+
+---
+
+# 29. Do Not Invent API Fields
+
+The AI Agent MUST NOT add arbitrary fields to `Response`.
+
+For example, if the requirement specifies:
+
+```json
+{
+  "status": "ok",
+  "message": "",
+  "data": {}
+}
+```
+
+do not add:
+
+```json
+{
+  "status": "ok",
+  "message": "",
+  "data": {},
+  "timestamp": "...",
+  "success": true
+}
+```
+
+unless explicitly required.
+
+---
+
+# 30. Naming Convention
+
+Use clear Go naming conventions.
+
+Request:
+
+```go
+type Request struct {}
+```
+
+Response:
+
+```go
+type Response struct {}
+```
+
+Database result:
+
+```go
+type AuthUser struct {}
+type Version struct {}
+```
+
+Query functions SHOULD use descriptive names.
+
+Examples:
+
+```go
+getAuthUserByUsername
+getVersion
+getOrderByID
+getProductByID
+getUserPermissions
+```
+
+Avoid generic names:
+
+```go
+query1
+query2
+getData
+doQuery
+```
+
+unless the project already uses such naming.
+
+---
+
+# 31. Query Function Naming
+
+The function name SHOULD describe:
+
+```text
+verb + entity + condition
+```
+
+Examples:
+
+```go
+getAuthUserByUsername
+getUserByID
+getOrderByID
+getOrdersByUserID
+getActiveUsers
+```
+
+For a single record:
+
+```go
+getUserByID
+```
+
+For multiple records:
+
+```go
+getUsersByStatus
+```
+
+The return type MUST match the query result.
+
+Single record:
+
+```go
+(*User, error)
+```
+
+Multiple records:
+
+```go
+([]User, error)
+```
+
+---
+
+# 32. Multiple-Row Queries
+
+For queries returning multiple records:
+
+```go
+type User struct {
+    ID       int64  `json:"id" gorm:"column:id"`
+    Username string `json:"username" gorm:"column:username"`
+}
+
+func getUsersByStatus(
+    ctx context.Context,
+    db *gorm.DB,
+    status string,
+) ([]User, error) {
+
+    var users []User
+
+    query := `
+        SELECT
+            id,
+            username,
+            status
+        FROM auth_user
+        WHERE status = ?
+        ORDER BY id
+    `
+
+    err := db.WithContext(ctx).
+        Raw(query, status).
+        Scan(&users).
+        Error
+
+    if err != nil {
+        return nil, err
+    }
+
+    return users, nil
+}
+```
+
+The Agent MUST use a slice when the query can return multiple records.
+
+---
+
+# 33. SQL Parameterization
+
+All external values MUST be passed as SQL parameters.
+
+Correct:
+
+```go
+query := `
+    SELECT
+        id,
+        email
+    FROM auth_user
+    WHERE id = ?
+`
+
+err := db.WithContext(ctx).
+    Raw(query, userID).
+    Scan(&user).
+    Error
+```
+
+Incorrect:
+
+```go
+query := fmt.Sprintf(`
+    SELECT
+        id,
+        email
+    FROM auth_user
+    WHERE id = %d
+`, userID)
+```
+
+Never concatenate or interpolate user-provided values directly into SQL.
+
+---
+
+# 34. Response Success Pattern
+
+Successful responses SHOULD follow:
+
+```go
+c.JSON(http.StatusOK, Response{
+    Status:  "ok",
+    Message: "[success message]",
+    Data:    data,
+})
+```
+
+Example:
+
+```go
+c.JSON(http.StatusOK, Response{
+    Status:  "ok",
+    Message: "User retrieved successfully",
+    Data:    user,
+})
+```
+
+Additional response data:
+
+```go
+c.JSON(http.StatusOK, Response{
+    Status:  "ok",
+    Message: "User retrieved successfully",
+    Data:    user,
+    Version: version,
+})
+```
+
+---
+
+# 35. Response Error Pattern
+
+Error responses SHOULD follow:
+
+```go
+c.JSON([HTTP status], Response{
+    Status:  "error",
+    Message: "[error message]",
+    Data:    nil,
+})
+return
+```
+
+Additional response fields MUST also be populated consistently.
+
+Example:
+
+```go
+c.JSON(http.StatusNotFound, Response{
+    Status:  "error",
+    Message: "Not found",
+    Data:    nil,
+    Version: nil,
+})
+return
+```
+
+---
+
+# 36. Comments
+
+The Handler SHOULD use the standard step comments:
+
+```go
+// Step 1: Validate query parameter request
+// Step 2: Validate request
+// Step 3: Connect to database
+// Step 4: Main logic
+// Step 5: Return response
+```
+
+These comments are useful for keeping the endpoint implementation predictable.
+
+The Agent SHOULD NOT add excessive comments explaining obvious Go syntax.
+
+Comments SHOULD describe implementation steps or important business logic.
+
+---
+
+# 37. Validation Library
+
+When custom validation is required, use the project's existing validation convention.
+
+The standard validation library is:
+
+```text
+github.com/go-playground/validator/v10
+```
+
+Do not introduce another validation library unless explicitly requested.
+
+---
+
+# 38. GORM Usage Restriction
+
+GORM is used for:
+
+1. Database connection.
+2. Database context.
+3. Raw SQL execution.
+4. Scanning query results.
+5. Standard GORM errors such as:
+
+```go
+gorm.ErrRecordNotFound
+```
+
+The Agent MUST NOT replace Raw SQL with GORM's ORM query builder.
+
+Required:
+
+```go
+db.WithContext(ctx).Raw(query, parameter...).Scan(&result)
+```
+
+Not allowed:
+
+```go
+db.WithContext(ctx).
+    Where("username = ?", name).
+    First(&user)
+```
+
+---
+
+# 39. Final Implementation Checklist
+
+Before returning code, the AI Agent MUST verify every item below.
+
+## Handler
+
+* [ ] Main function is `func Handler(c *gin.Context)`.
+* [ ] Handler contains Step 1 through Step 5.
+* [ ] Step 1 performs request binding.
+* [ ] Step 2 performs validation.
+* [ ] Step 3 connects to database.
+* [ ] Step 4 performs main logic.
+* [ ] Step 5 returns the response.
+* [ ] Handler does not contain Raw SQL.
+* [ ] Handler does not contain large database query implementations.
+
+## Request
+
+* [ ] `Request` struct exists.
+* [ ] Binding tags are correct.
+* [ ] Required fields use appropriate validation tags.
+
+## Response
+
+* [ ] `Response` struct exists.
+* [ ] `status` exists.
+* [ ] `message` exists.
+* [ ] `status` is `ok` or `error`.
+* [ ] Additional response fields match the API requirement.
+
+## Database
+
+* [ ] Existing database connection model is used.
+* [ ] Database connection is obtained through `.Connect()`.
+* [ ] Queries use the returned `*gorm.DB`.
+* [ ] Query functions receive `context.Context`.
+* [ ] Query functions receive `*gorm.DB`.
+
+## Query
+
+* [ ] Every database query is a separate sub function.
+* [ ] Query result struct is declared before its query function.
+* [ ] Query result fields have `json:"..."`.
+* [ ] Query result fields have `gorm:"column:..."`.
+* [ ] Column names match the real database schema.
+* [ ] Raw SQL is used.
+* [ ] `db.WithContext(ctx)` is used.
+* [ ] `.Raw(query, parameters...)` is used.
+* [ ] `.Scan(&result)` is used.
+* [ ] Database errors are checked.
+* [ ] Record-not-found conditions are handled when applicable.
+
+## SQL
+
+* [ ] SQL keywords are uppercase.
+* [ ] Column names are real database column names.
+* [ ] Columns are explicitly listed.
+* [ ] `SELECT *` is avoided when columns are known.
+* [ ] SQL is formatted consistently.
+* [ ] User input is parameterized using `?`.
+* [ ] SQL values are not concatenated into query strings.
+
+## Error Handling
+
+* [ ] Every query error is handled by the Handler.
+* [ ] Error responses use `status: "error"`.
+* [ ] Error responses include `message`.
+* [ ] Handler returns immediately after an error response.
+* [ ] HTTP status code matches the error type where defined by the API specification.
+
+---
+
+# 40. Golden Rule
+
+When implementing an API endpoint, the AI Agent MUST think in this order:
+
+```text
+1. What is the Request?
+2. What is the Response?
+3. How is the Request validated?
+4. Which database connection model should be used?
+5. What data must be retrieved?
+6. What query result struct is required?
+7. What Raw SQL is required?
+8. Which query sub function should contain the SQL?
+9. How should query errors be handled?
+10. What is the final HTTP response?
+```
+
+The resulting implementation MUST follow:
+
+```text
+Request
+    ↓
+Step 1: Bind / Validate request parameters
+    ↓
+Step 2: Validate request
+    ↓
+Step 3: Connect database
+    ↓
+Step 4: Call query sub functions
+    ↓
+Raw SQL inside query sub functions
+    ↓
+Return data/error from query functions
+    ↓
+Step 5: Return standardized Response
+```
+
+The AI Agent MUST prioritize consistency with this structure over introducing alternative coding patterns.
+
+If an existing project implementation conflicts with this skill, the Agent MUST first inspect the surrounding project conventions and then follow the user's explicit requirement. Do not silently introduce a new architectural pattern.

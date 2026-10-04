@@ -14,4 +14,7 @@ go get -u gorm.io/driver/postgres
 # go get -u gorm.io/driver/sqlite
 # go get -u gorm.io/driver/sqlserver
 
+# ENV
+go get -u github.com/joho/godotenv
+
 go mod tidy

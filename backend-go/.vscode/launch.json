@@ -9,14 +9,16 @@
             "type": "go",
             "request": "launch",
             "mode": "auto",
-            "program": "${workspaceFolder}"
+            "program": "${workspaceFolder}/cmd/${fileBasenameNoExtension}",
+            "cwd": "${workspaceFolder}"
         },
         {
             "name": "Launch Package gogin",
             "type": "go",
             "request": "launch",
             "mode": "auto",
-            "program": "${workspaceFolder}"
+            "program": "${workspaceFolder}/cmd/api",
+            "cwd": "${workspaceFolder}"
         }
     ]
 }
