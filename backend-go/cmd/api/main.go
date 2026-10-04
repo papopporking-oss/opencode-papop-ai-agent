@@ -23,8 +23,17 @@ func main() {
 	}
 
 	// Connect database
-	pgopencode.Connect()
-	pgopencode2.Connect()
+	if db1 := pgopencode.Connect(); db1 == nil {
+		slog.Error("Failed to connect to pgopencode database")
+	} else {
+		slog.Info("Connected to pgopencode database successfully")
+	}
+
+	if db2 := pgopencode2.Connect(); db2 == nil {
+		slog.Error("Failed to connect to pgopencode2 database")
+	} else {
+		slog.Info("Connected to pgopencode2 database successfully")
+	}
 
 	router := gin.Default()
 	router.GET("/ping", func(c *gin.Context) {
