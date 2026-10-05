@@ -36,18 +36,18 @@ func main() {
 	}
 
 	router := gin.Default()
-	router.GET("/ping", func(c *gin.Context) {
+	router.GET("/api/ping", func(c *gin.Context) {
 		c.JSON(200, gin.H{
 			"message": "pong",
 		})
 	})
-	router.GET("/testget", testget.Handler)
-	router.GET("/testpost", testpost.Handler)
+	router.GET("/api/testget", testget.Handler)
+	router.GET("/api/testpost", testpost.Handler)
 
 	// ai
-	router.GET("/ai/template-query", templatedbqueryget.Handler)
-	router.GET("/ai/erp-products-by-like-product-code-or-product-name", erpproductsbylikeproductcodeorproductnameget.Handler)
-	router.GET("/ai/erp-customers-by-customer-code", erpcustomersbycustomercodeget.Handler)
+	router.GET("/api/test/ai/template-query", templatedbqueryget.Handler)
+	router.GET("/api/test/ai/erp-products-by-like-product-code-or-product-name", erpproductsbylikeproductcodeorproductnameget.Handler)
+	router.GET("/api/test/ai/erp-customers-by-customer-code", erpcustomersbycustomercodeget.Handler)
 
 	// listens on 0.0.0.0:8080 by default
 	// router.Run()
