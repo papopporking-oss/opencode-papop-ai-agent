@@ -8,6 +8,7 @@ import (
 	"go-gin-standard/internal/controller/testpost"
 	"go-gin-standard/internal/database/pgopencode"
 	"go-gin-standard/internal/database/pgopencode2"
+	"go-gin-standard/internal/database/tspgopencode2"
 	"log/slog"
 
 	"github.com/gin-gonic/gin"
@@ -28,11 +29,15 @@ func main() {
 	} else {
 		slog.Info("Connected to pgopencode database successfully")
 	}
-
 	if db2 := pgopencode2.Connect(); db2 == nil {
 		slog.Error("Failed to connect to pgopencode2 database")
 	} else {
 		slog.Info("Connected to pgopencode2 database successfully")
+	}
+	if db3 := tspgopencode2.Connect(); db3 == nil {
+		slog.Error("Failed to connect to tspgopencode2 database")
+	} else {
+		slog.Info("Connected to tspgopencode2 database successfully")
 	}
 
 	router := gin.Default()

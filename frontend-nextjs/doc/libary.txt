@@ -1,5 +1,13 @@
+# UI
 npm install tailwindcss 
 npm install @tailwindcss/postcss 
 npm install daisyui@latest
 
+# Webcam
+npm i react-webcam
+
+# Zod is a TypeScript-first validation library.
+npm i zod
+
+# Skill install
 npx skills add saadeghi/daisyui --agent opencode --yes

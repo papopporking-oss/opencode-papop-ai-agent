@@ -1,3 +1,8 @@
+---
+name: gin-gorm-api-standard
+description: Strict coding standards for implementing and modifying Gin API endpoints using Go, GORM, and PostgreSQL.
+---
+
 # Gin GORM API Standard
 
 ## Skill Name

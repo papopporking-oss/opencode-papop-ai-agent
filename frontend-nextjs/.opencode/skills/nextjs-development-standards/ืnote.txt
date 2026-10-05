@@ -1,3 +1,12 @@
+.opencode/skills/nextjs-development-standards/SKILL.md
+
+```
+---
+name: nextjs-development-standards
+description: Strict standards for building and modifying Next.js applications using React, Tailwind CSS, and DaisyUI.
+---
+
+
 # Next.js Development Standards
 
 ## Role
@@ -557,3 +566,80 @@ Use Tailwind CSS responsively.
 Preserve the existing project structure.
 
 Follow the rules strictly.
+
+```
+
+ช่วยปรับปรุง Skill นี้ใหม่ให้หน่อย
+
+สิ่งที่ต้องการเพิ่ม
+1. Format การเขียน props
+Format ที่ผิด
+‘’‘
+
+function Profile(props) {
+  return (
+    <div className="card">
+      <Avatar {...props} />
+    </div>
+  );
+}
+
+’‘‘
+
+Format ที่ถูก
+‘’’
+
+function Profile({ person, size, isSepia, thickBorder }) {
+  return (
+    <div className="card">
+      <Avatar
+        person={person}
+        size={size}
+        isSepia={isSepia}
+        thickBorder={thickBorder}
+      />
+    </div>
+  );
+}
+
+’’‘
+
+2. Adding event handlers role ถัามีการใช้งาน on[event] จะต้องใช้งาน sub function standard ห้ามใช้งาน arrow function และการตั้งชื่อ sub function จะต้องมีคำว่า handle อยู่คำนำหน้าด้วย ตัวอย่าง handle[even name] 
+ห้ามเขียนแบบนี้
+‘‘’
+<button onClick={function handleClick() {
+  alert('You clicked me!');
+}}>
+’’‘
+และ แบบนี้
+‘‘’
+<button onClick={() => {
+  alert('You clicked me!');
+}}>
+’’‘
+
+จะต้องเขียนแบบนี้เท่านั้น
+‘’‘
+
+export default function Button() {
+  function handleClick() {
+    alert('You clicked me!');
+  }
+
+  return (
+    <button onClick={handleClick}>
+      Click me
+    </button>
+  );
+}
+
+‘‘’
+
+สุดท้าย
+1. Role ที่ผมเพิ่มไปใหม่ถ้ามันไม่ได้อยู่ใน nextjs-development-standards ให้เขียนเพิ่มไปให้หน่อย
+2. ถ้ามีอยู่แล้วช่วยเรียบเรียงคำใหม่ให้ AI Agent เข้าใจให้หน่อย
+3. เขียน Skill ให้ละเอียดที่สุด และต้องให้ Ai agent ปฏิบัติตามกฎอย่างเคงขัด
+4. ช่วยเขียน name: , description: ใหม่ให้ด้วยถ้า Role ที่ผมเพิ่มไปใหม่ไม่สอดคล้องกัน
+
+Output format 
+- ```txt
