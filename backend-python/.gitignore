@@ -23,6 +23,8 @@ venv
 docs.zip
 archive.zip
 
+dataset/
+
 # vim temporary files
 *~
 .*.sw?
