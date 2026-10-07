@@ -5,7 +5,7 @@ load_dotenv()
 # Database
 from database.pgopencode import pool
 
-# Fastapi
+# FastAPI
 from fastapi import Depends, FastAPI, WebSocket
 from fastapi.responses import HTMLResponse
 

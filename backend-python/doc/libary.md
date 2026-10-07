@@ -9,6 +9,9 @@ pip3.12 install "fastapi[standard]"
 pip3.12 install uvicorn
 pip3.12 install websockets
 
+# MCP
+pip3.12 install "fastmcp[tasks,apps]"
+
 pip3.12 install opencv-python
 
 # AI
