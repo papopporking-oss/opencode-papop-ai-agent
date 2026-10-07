@@ -49,7 +49,7 @@ func main() {
 	router.GET("/api/testget", testget.Handler)
 	router.GET("/api/testpost", testpost.Handler)
 
-	// ai
+	// AI
 	router.GET("/api/test/ai/template-query", templatedbqueryget.Handler)
 	router.GET("/api/test/ai/erp-products-by-like-product-code-or-product-name", erpproductsbylikeproductcodeorproductnameget.Handler)
 	router.GET("/api/test/ai/erp-customers-by-customer-code", erpcustomersbycustomercodeget.Handler)

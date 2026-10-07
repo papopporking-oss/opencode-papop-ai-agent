@@ -1139,7 +1139,7 @@ If the API route must be added to:
 the AI MUST add the comment:
 
 ```go
-// ai
+// AI
 ```
 
 to explicitly indicate that the route was written by AI.
@@ -1147,18 +1147,18 @@ to explicitly indicate that the route was written by AI.
 Example:
 
 ```go
-// ai
+// AI
 router.GET("/users", templatedbqueryget.Handler)
 ```
 
-The `// ai` comment MUST be placed immediately above the route that AI added.
+The `// AI` comment MUST be placed immediately above the route that AI added.
 
-Do not add `// ai` to unrelated existing routes.
+Do not add `// AI` to unrelated existing routes.
 
 If AI modifies an existing route, also mark the modified route with:
 
 ```go
-// ai
+// AI
 ```
 
 ---
@@ -1170,7 +1170,7 @@ Route registration MUST use the endpoint's `Handler`.
 Example:
 
 ```go
-// ai
+// AI
 router.GET("/users", templatedbqueryget.Handler)
 ```
 
@@ -1512,7 +1512,7 @@ If route registration is required in:
 add:
 
 ```go
-// ai
+// AI
 ```
 
 immediately above the route written or modified by AI.
@@ -1537,7 +1537,7 @@ Before finishing, verify:
 * Handler contains all five required steps.
 * Response contains `status` and `message`.
 * Timestamp output uses the required format.
-* AI-added routes contain `// ai`.
+* AI-added routes contain `// AI`.
 
 ---
 
@@ -1639,7 +1639,7 @@ Required:
 2026-10-03 12:33:05
 ```
 
-## Forbidden: Missing `// ai` route marker
+## Forbidden: Missing `// AI` route marker
 
 If AI adds or modifies a route in:
 
@@ -1650,7 +1650,7 @@ If AI adds or modifies a route in:
 it MUST include:
 
 ```go
-// ai
+// AI
 ```
 
 ---
@@ -1727,8 +1727,8 @@ Before considering an API implementation complete, AI MUST verify every item bel
 
 ### Route
 
-* [ ] AI-added route in `./cmd/api/main` has `// ai`.
-* [ ] AI-modified route in `./cmd/api/main` has `// ai`.
+* [ ] AI-added route in `./cmd/api/main` has `// AI`.
+* [ ] AI-modified route in `./cmd/api/main` has `// AI`.
 
 ---
 
@@ -1749,7 +1749,7 @@ When generating or modifying a Gin + GORM API endpoint:
 9. Do not omit Step comments.
 10. Do not write implementation comments in languages other than English.
 11. Do not output timestamps in an unsupported format.
-12. Do not add or modify routes without adding `// ai` as required.
+12. Do not add or modify routes without adding `// AI` as required.
 13. Do not invent database column names.
 14. Do not guess database schema information when the actual schema is required for correctness.
 15. Preserve the existing project architecture and naming conventions where they do not conflict with this skill.
