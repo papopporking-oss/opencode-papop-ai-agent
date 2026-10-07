@@ -18,8 +18,6 @@ go get -u gorm.io/driver/postgres
 go get -u github.com/joho/godotenv
 
 # auth0
-go get -u github.com/auth0/go-auth0/v2
-go get -u github.com/gorilla/sessions
-go get -u github.com/joho/godotenv
+go get -u github.com/auth0/go-jwt-middleware/v3
 
 go mod tidy

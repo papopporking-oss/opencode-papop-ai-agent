@@ -9,6 +9,7 @@ import (
 	"go-gin-standard/internal/database/pgopencode"
 	"go-gin-standard/internal/database/pgopencode2"
 	"go-gin-standard/internal/database/tspgopencode2"
+	"go-gin-standard/internal/middleware/logger"
 	"log/slog"
 
 	"github.com/gin-gonic/gin"
@@ -46,8 +47,12 @@ func main() {
 			"message": "pong",
 		})
 	})
+
+	// Test
 	router.GET("/api/testget", testget.Handler)
 	router.GET("/api/testpost", testpost.Handler)
+	// Test Logger middleware
+	router.GET("/api/testmiddleware", logger.Logger(), testpost.Handler)
 
 	// AI
 	router.GET("/api/test/ai/template-query", templatedbqueryget.Handler)
