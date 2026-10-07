@@ -7,6 +7,7 @@ source .venv/bin/activate
 # API
 pip3.12 install "fastapi[standard]"
 pip3.12 install uvicorn
+pip3.12 install websockets
 
 pip3.12 install opencv-python
 
@@ -19,10 +20,5 @@ pip3.12 install "psycopg[binary,pool]"
 # ENV
 pip3.12 install python-dotenv
 
+# Save env
 pip freeze > requirements.txt
-
-# Run
-fastapi dev main.py
-
-# Run production
-uvicorn main:app --host 0.0.0.0 --port 8080

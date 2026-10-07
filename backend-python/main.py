@@ -1,7 +1,17 @@
+# Load env
 from dotenv import load_dotenv
 load_dotenv()
+
+# Database
 from database.pgopencode import pool
-from fastapi import Depends, FastAPI
+
+# Fastapi
+from fastapi import Depends, FastAPI, WebSocket
+from fastapi.responses import HTMLResponse
+
+# Router
+from router.test_websocket import router as test_websocket_router
+
 app = FastAPI()
 
 @app.get("/api/hello-world")
@@ -22,3 +32,6 @@ def db_pgopencode_version_get():
         "database": "postgresql",
         "version": version,
     }
+
+# Router include
+app.include_router(test_websocket_router)
