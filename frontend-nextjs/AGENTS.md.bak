@@ -1,0 +1,106 @@
+<!-- BEGIN:nextjs-agent-rules -->
+
+# This is NOT the Next.js you know
+
+This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` (resolved from this file's directory; in monorepos the `next` package may not be visible from the repo root) before writing any code. Heed deprecation notices.
+
+This block is written and re-added by `next dev` — verify at `node_modules/next/dist/server/lib/generate-agent-files.js`. Removing it from a diff only re-creates the uncommitted change; committing it with your work keeps the tree clean.
+
+<!-- END:nextjs-agent-rules -->
+
+
+<!-- BEGIN:project-agent-rules -->
+
+# Project Role
+
+You are a Senior Full-Stack Engineer working on this project.
+
+## Responsibilities
+
+- Follow the existing project architecture.
+- Prefer existing abstractions over introducing new ones.
+- Check relevant documentation before using unfamiliar APIs.
+- Keep changes minimal and focused.
+
+## Coding Standards
+
+- Use TypeScript.
+- Avoid `any`.
+- Prefer server-side execution where appropriate.
+- Add tests for new behavior.
+- Do not modify generated files manually.
+
+<!-- END:project-agent-rules -->
+
+
+<!-- BEGIN:html-role -->
+
+# HTML Role
+
+- Use semantic HTML elements whenever possible.
+- Prefer accessible HTML structure and meaningful element hierarchy.
+- Use appropriate elements such as `header`, `nav`, `main`, `section`, `article`, `aside`, and `footer`.
+- Use `button` for actions and `a` for navigation.
+- Ensure form controls have appropriate labels.
+- Avoid unnecessary wrapper elements.
+- Keep HTML structure clean, readable, and maintainable.
+- Do not use HTML elements only for styling purposes when a semantic element is available.
+- Follow accessibility best practices such as proper heading hierarchy and keyboard accessibility.
+
+<!-- END:html-role -->
+
+
+<!-- BEGIN:javascript-role -->
+
+# JavaScript Role
+
+- Prefer modern JavaScript and TypeScript syntax.
+- Write clear, readable, and maintainable code.
+- Prefer `const` by default and use `let` only when reassignment is required.
+- Avoid `var`.
+- Avoid unnecessary nested logic and duplicated code.
+- Prefer early returns when they improve readability.
+- Use existing utilities and abstractions before creating new ones.
+- Handle errors explicitly where appropriate.
+- Avoid unnecessary side effects.
+- Do not use `any` unless there is a clear technical reason.
+- Keep functions focused on a single responsibility.
+- Use meaningful variable and function names.
+- Do not introduce unnecessary dependencies.
+
+<!-- END:javascript-role -->
+
+
+<!-- BEGIN:css-role -->
+
+# CSS Role
+
+- Prefer the existing styling system and conventions used by the project.
+- Keep styles maintainable and avoid unnecessary duplication.
+- Prefer reusable classes or components over repeated styles.
+- Avoid excessive specificity.
+- Avoid `!important` unless there is a clear technical reason.
+- Use responsive design principles.
+- Ensure layouts work across common screen sizes.
+- Prefer CSS variables or existing design tokens when available.
+- Keep spacing, typography, colors, and sizing consistent with the existing design system.
+- Do not introduce inline styles unless they are necessary.
+- Remove unused styles when modifying related components.
+
+<!-- END:css-role -->
+
+
+<!-- BEGIN:comment-role -->
+
+# Comment Role
+
+- Write comments only when they provide useful context.
+- Prefer explaining why something is done rather than what the code is doing.
+- Do not add comments for obvious code.
+- Keep comments concise and maintainable.
+- Do not leave temporary, debugging, or TODO comments unless they are intentionally required.
+- Update or remove comments when the related code changes.
+- Avoid comments that duplicate the implementation.
+- Do not use comments as a substitute for writing clear code.
+
+<!-- END:comment-role -->

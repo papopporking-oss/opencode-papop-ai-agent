@@ -1,11 +1,29 @@
 {
   "version": 1,
   "skills": {
+    "context-injection": {
+      "source": "blunotech-dev/agents",
+      "sourceType": "github",
+      "skillPath": "ai integration/context-injection/SKILL.md",
+      "computedHash": "e54a5c29a5f8516574fff9a6412a2dfb265450771abb719e6c70f556613cf5f4"
+    },
     "daisyui": {
       "source": "saadeghi/daisyui",
       "sourceType": "github",
       "skillPath": "skills/daisyui/SKILL.md",
       "computedHash": "f70b06883160802b5b04db0504647cc140bd38cf7eb941183a38f44a179b27ca"
+    },
+    "next-dev-loop": {
+      "source": "vercel/next.js",
+      "sourceType": "github",
+      "skillPath": "skills/next-dev-loop/SKILL.md",
+      "computedHash": "c305c83b726212e0284930c65cded2c4a4ab85f9bfccfa83b62274247fe3580e"
+    },
+    "tailwind-class-sorter": {
+      "source": "blunotech-dev/agents",
+      "sourceType": "github",
+      "skillPath": "design/tailwind-class-sorter/SKILL.md",
+      "computedHash": "b304eb0b65a7a66da7948723ffd9270c36bde71f10690f87ceec2474ddead1e7"
     }
   }
 }

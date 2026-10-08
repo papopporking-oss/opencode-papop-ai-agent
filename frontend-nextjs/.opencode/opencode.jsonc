@@ -3,6 +3,5 @@
   "shell": "/bin/bash",
   "model": "siliconflow/zai-org/GLM-5",
   "default_agent": "build",
-  "websearch": false,
-//   "skills": ["./team-skills", "https://example.com/.well-known/skills/"],
+  "websearch": true
 }

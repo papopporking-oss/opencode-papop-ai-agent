@@ -24,6 +24,7 @@ docs.zip
 archive.zip
 
 dataset/
+static/tmp/
 
 # vim temporary files
 *~

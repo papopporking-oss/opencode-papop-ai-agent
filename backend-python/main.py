@@ -8,11 +8,14 @@ from database.pgopencode import pool
 # FastAPI
 from fastapi import Depends, FastAPI, WebSocket
 from fastapi.responses import HTMLResponse
+from fastapi.staticfiles import StaticFiles
 
 # Router
 from router.test_websocket import router as test_websocket_router
 
 app = FastAPI()
+
+app.mount("/api/static", StaticFiles(directory="static"), name="static")
 
 @app.get("/api/hello-world")
 def hello_word_get():
